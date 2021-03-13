@@ -50,7 +50,7 @@ async def index() -> str:
 
 @app.route("/static/<name>")
 async def get_static_file(name: str) -> Response:
-    return await send_file("./static/" + name)
+    return await send_file("../static/" + name)
 
 
 @app.route("/upload", methods=["POST"])
@@ -66,7 +66,7 @@ async def send_to_static() -> Response:
     fmt = content_type_conv.get(file.content_type)
     full_name = generate_name() + fmt
 
-    file.save("./static/" + full_name)
+    file.save("../static/" + full_name)
     return redirect("/static/" + full_name)
 
 
