@@ -11,4 +11,4 @@ Running the CDN
 
 .. code-block:: sh
 
-    $ hypercorn --bind '0.0.0.0:5000' --bind '[::]:5000' ...
+    $ hypercorn main:app --bind '0.0.0.0:5000' --bind '[::]:5000'
