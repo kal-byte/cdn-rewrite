@@ -28,6 +28,7 @@ from quart import Quart, request, redirect, send_file, Response
 dotenv.load_dotenv()
 
 app = Quart(__name__, static_url_path="/static", static_folder="/static")
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.secret_key = os.environ["SECRET_KEY"]
 
 
