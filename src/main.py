@@ -4,7 +4,7 @@ MIT License
 Copyright 2021-Present kal-byte
 
 Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
+copy of this software and associated documentation files (the 'Software'),
 to deal in the Software without restriction, including without limitation the rights to use,
 copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
 and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -24,52 +24,54 @@ import os
 import dotenv
 import random
 import string
-from quart import Quart, request, redirect, send_file, Response
+from quart import Quart, request, redirect, send_file, Response, url_for
 dotenv.load_dotenv()
 
-app = Quart(__name__, static_url_path="/static", static_folder="/static")
+app = Quart(__name__, static_url_path='/static', static_folder='/static')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.secret_key = os.environ["SECRET_KEY"]
+app.secret_key = os.environ['SECRET_KEY']
 
 
-content_type_conv = {
-    "image/png": ".png",
-    "image/gif": ".gif",
-    "image/jpeg": ".jpeg",
+mime_types = {
+    'image/png': '.png',
+    'image/gif': '.gif',
+    'image/jpeg': '.jpeg',
 }
 
 
 def generate_name() -> str:
     ret = random.choices(string.hexdigits, k=8)
-    return "".join(ret)
+    return ''.join(ret)
 
 
-@app.route("/")
+@app.route('/')
 async def index() -> str:
-    return "Hi, welcome to my CDN. If you want the source to this contact kal#1806."
+    return 'Hi, welcome to my CDN. If you want the source to this contact kal#1806.'
 
 
-@app.route("/static/<name>")
-async def get_static_file(name: str) -> Response:
-    return await send_file("../static/" + name)
+@app.route('/imoog/<string:name>')
+async def get_image(name: str) -> Response:
+    return await send_file('../static/' + name)
 
 
-@app.route("/upload", methods=["POST"])
+@app.route('/upload', methods=['POST'])
 async def send_to_static() -> Response:
-    token = request.args.get("token")
+    token = request.args.get('token')
 
     if not token or token != app.secret_key:
-        return "Invalid token provided in parameters.", 403
+        return 'Invalid token provided in parameters.', 403
 
     files = await request.files
-    file = files["file"]
+    file = files['file']
 
-    fmt = content_type_conv.get(file.content_type)
+    fmt = mime_types.get(file.content_type)
     full_name = generate_name() + fmt
 
-    file.save("../static/" + full_name)
-    return redirect("/static/" + full_name)
+    file.save('../static/' + full_name)
+    url = request.url.split('/upload')[0]
+    sub = url_for('get_image', name=full_name)
+    return url + sub, 200
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run()
