@@ -68,7 +68,7 @@ async def send_to_static() -> Response:
     full_name = generate_name() + fmt
 
     file.save('../static/' + full_name)
-    url = request.url.split('/upload')[0]
+    url = request.url.split('/upload')[0].replace('http', 'https')
     sub = url_for('get_image', name=full_name)
     return url + sub, 200
 
